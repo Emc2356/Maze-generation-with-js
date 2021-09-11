@@ -1,11 +1,13 @@
 var self = this;
 self.canvas = document.getElementById("canvas");
 self.ctx = canvas.getContext("2d");
+self.SaveButton = document.getElementById("SaveButton");
 self.width = canvas.width = 600;
 self.height = canvas.height = 600;
-self.res = 30;
+self.res = 50;
 self.rows = Math.floor(self.width/res);
 self.columns = Math.floor(self.height/res);
+self.StringifiedData = undefined;
 self.path = [];
 self.grid = [];
 for (let i = 0; i < self.columns; i++) {
@@ -19,7 +21,37 @@ self.CurrentCell.visit();
 
 update();
 
-function update() {
+async function update() {
+    // check if the maze is finished to enable the save button
+    if (IsFinished()) {
+        self.SaveButton.disabled = false;
+        if (!self.StringifiedData) {
+            let DataToSave = {
+                map: [],
+                rows: self.rows,
+                columns: self.columns
+            }
+            for (let i = 0; i < self.columns; i++) {
+                DataToSave.map.push([]);
+                for (let j = 0; j < self.rows; j++) {
+                    DataToSave.map[i].push({
+                            x: self.grid[i][j].j,
+                            y: self.grid[i][j].i,
+                            walls: self.grid[i][j].walls
+                        }
+                    );
+                }
+            }
+            self.StringifiedData = JSON.stringify(DataToSave);
+            self.BlobData = new Blob([self.StringifiedData], {type: "application/json"});
+            self.url = window.URL.createObjectURL(self.BlobData);
+            self.link = document.createElement("a");
+            self.link.href = self.url;
+            self.link.download = "maze.json";
+        }
+    } else {
+        self.SaveButton.disabled = true;
+    }
     self.NextCell = CurrentCell.GetNewNeighbor(grid);
     if (self.NextCell) {
         self.NextCell.visit();
@@ -44,3 +76,13 @@ function update() {
     window.requestAnimationFrame(update);
 };
 
+function SaveMaze() {
+    if (IsFinished()) {
+        self.link.click();
+    }
+    
+}
+
+function IsFinished() {
+    return self.path.length == 0 && self.StartingCell.GetNeighbors(grid).every(cell => cell.visited === true);
+}

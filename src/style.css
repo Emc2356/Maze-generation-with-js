@@ -2,3 +2,32 @@
     margin: 0;
     padding: 0;
 }
+
+button[type="SaveButton"] {
+    background-color: #4CAF50;
+    position: absolute;
+    border: none;
+    color: black;
+    padding: 0px 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+button[type="SaveButton"]:hover {
+    background-color: #2e8031;
+    position: absolute;
+    border: none;
+    color: black;
+    padding: 0px 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+button[type="SaveButton"]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
